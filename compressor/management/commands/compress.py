@@ -225,8 +225,8 @@ class Command(BaseCommand):
                         rendered = parser.render_nodelist(template, context, node)
                         key = get_offline_hexdigest(rendered)
 
-                        if key in offline_manifest:
-                            continue
+                        if key not in offline_manifest:
+                            offline_manifest[key] = OrderedDict()
 
                         try:
                             result = parser.render_node(template, context, node)
@@ -236,7 +236,7 @@ class Command(BaseCommand):
                         result = result.replace(
                             settings.COMPRESS_URL, settings.COMPRESS_URL_PLACEHOLDER
                         )
-                        offline_manifest[key] = result
+                        offline_manifest[key][node.mode] = result
                         context.pop()
                         results.append(result)
                         block_count += 1

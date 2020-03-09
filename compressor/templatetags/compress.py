@@ -58,7 +58,7 @@ class CompressorMixin(object):
         return (settings.COMPRESS_ENABLED
                 and settings.COMPRESS_OFFLINE) or forced
 
-    def render_offline(self, context):
+    def render_offline(self, context, mode):
         """
         If enabled and in offline mode, and not forced check the offline cache
         and return the result if given
@@ -67,7 +67,7 @@ class CompressorMixin(object):
         key = get_offline_hexdigest(original_content)
         offline_manifest = get_offline_manifest()
         if key in offline_manifest:
-            return offline_manifest[key].replace(
+            return offline_manifest[key][mode].replace(
                 settings.COMPRESS_URL_PLACEHOLDER,
                 # Cast ``settings.COMPRESS_URL`` to a string to allow it to be
                 # a string-alike object to e.g. add ``SCRIPT_NAME`` WSGI param
@@ -94,7 +94,7 @@ class CompressorMixin(object):
 
         # See if it has been rendered offline
         if self.is_offline_compression_enabled(forced) and not forced:
-            return self.render_offline(context)
+            return self.render_offline(context, mode)
 
         # Take a shortcut if we really don't have anything to do
         if (not settings.COMPRESS_ENABLED
