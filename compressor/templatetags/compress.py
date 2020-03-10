@@ -112,7 +112,7 @@ class CompressorMixin(object):
             if cache_content is not None:
                 return cache_content
 
-        file_basename = name or getattr(self, 'basename', None)
+        file_basename = name or getattr(self, 'basename', None) or context.get('compress_block_name')
         if file_basename is None:
             file_basename = 'output'
 

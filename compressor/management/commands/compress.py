@@ -23,6 +23,15 @@ from compressor.exceptions import (OfflineGenerationError, TemplateSyntaxError,
 from compressor.utils import get_mod_func
 
 
+def get_short_template_name(template):
+    path_segments = template.template_name.split("/")
+    file_path = path_segments[-1]
+    parts = file_path.split('.')
+
+    # TODO: this assumes that there is only one {dot} aka name.html
+    return parts[0].replace("_", "")
+
+
 class Command(BaseCommand):
     help = "Compress content outside of the request/response cycle"
 
@@ -227,6 +236,8 @@ class Command(BaseCommand):
 
                         if key not in offline_manifest:
                             offline_manifest[key] = OrderedDict()
+
+                        context['compress_block_name'] = get_short_template_name(template)
 
                         try:
                             result = parser.render_node(template, context, node)
